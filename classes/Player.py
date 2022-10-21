@@ -1,9 +1,10 @@
 import pygame
+
 from singleton import singleton
+from screen import screen
 
 class Player:
-  def __init__(self, screen):
-    self.screen = screen
+  def __init__(self):
     self.dx = 700
     self.dy = 300
     self.position = pygame.math.Vector2(self.dx, self.dy)
@@ -19,4 +20,4 @@ class Player:
       self.direction = pygame.math.Vector2(self.dx, self.dy)
       self.position += self.direction * self.velocity    
 
-    pygame.draw.rect(self.screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, 60, 60))
+    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, 60, 60))

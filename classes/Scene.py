@@ -1,6 +1,7 @@
 import pygame
 
 from singleton import singleton
+from screen import screen
 
 
 class Scene:
@@ -95,11 +96,11 @@ class Scene:
     
     return self
 
-  def draw_map(self, screen):
+  def draw_map(self):
     pygame.draw.rect(screen, self.background, pygame.Rect(*self.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
     
     for item in self.items:
-      item.draw()
+      pygame.draw.rect(screen, item.background, pygame.Rect(*item.position, *item.size))
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
       pygame.draw.rect(screen, scene.background, pygame.Rect(*scene.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
@@ -113,3 +114,5 @@ class Scene:
 
   def add_item(self, item):
     self.items.append(item)
+
+  
