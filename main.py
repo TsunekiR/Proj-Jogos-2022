@@ -1,9 +1,11 @@
+from classes.Item import Item
 import pygame
 
 from classes.Player import Player
 from scenes.First import first_scene
 from scenes.main import build_map
 from singleton import singleton
+from classes.Item import Item
 
 pygame.init()
 build_map()
@@ -13,6 +15,8 @@ clock = pygame.time.Clock()
 current_scene = first_scene
 player = Player(screen)
 
+item1 = Item(screen, first_scene)
+
 while True:
   for event in pygame.event.get():
     if event.type == pygame.QUIT:
@@ -21,6 +25,7 @@ while True:
   
   current_scene = current_scene.check_for_scene_transitions(player)
   current_scene.draw_map(screen)
+  item1.draw(current_scene)
 
   player.draw()
 
