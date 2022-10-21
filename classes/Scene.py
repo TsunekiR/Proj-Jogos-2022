@@ -12,6 +12,7 @@ class Scene:
     self.scene_transition_spots = []
     self.scene_transition_directions = []
     self.neighbor_scenes = []
+    self.items = []
 
     self.scene_transition_target = None
     self.scene_transition_direction = None
@@ -96,6 +97,9 @@ class Scene:
 
   def draw_map(self, screen):
     pygame.draw.rect(screen, self.background, pygame.Rect(*self.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
+    
+    for item in self.items:
+      item.draw()
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
       pygame.draw.rect(screen, scene.background, pygame.Rect(*scene.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
@@ -107,3 +111,5 @@ class Scene:
            self.position.y < singleton.WINDOW_HEIGHT * -1 or \
            self.position.y > singleton.WINDOW_HEIGHT
 
+  def add_item(self, item):
+    self.items.append(item)
