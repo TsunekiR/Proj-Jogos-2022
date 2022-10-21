@@ -1,4 +1,3 @@
-from tkinter.tix import WINDOW
 class Singleton:
   def __init__(self):
     self.WINDOW_WIDTH = 1280

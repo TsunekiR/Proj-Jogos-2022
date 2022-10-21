@@ -1,4 +1,4 @@
-from classes import Scene
+from classes.Scene import Scene
 from scenes.Second import second_scene
 
 first_scene = Scene("purple")

@@ -1,8 +1,8 @@
-import os, sys
 import pygame
-from scenes.main import build_map
+
+from classes.Player import Player
 from scenes.First import first_scene
-from classes import Player
+from scenes.main import build_map
 from singleton import singleton
 
 pygame.init()
