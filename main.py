@@ -22,6 +22,7 @@ while True:
   current_scene.draw_map()
 
   player.draw()
+  player.interact(current_scene)
 
   pygame.display.flip()
   clock.tick(60)
