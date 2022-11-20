@@ -1,6 +1,7 @@
 import pygame
 
 from singleton import singleton
+from screen import screen
 
 
 class Scene:
@@ -12,6 +13,8 @@ class Scene:
     self.scene_transition_spots = []
     self.scene_transition_directions = []
     self.neighbor_scenes = []
+    self.items = []
+    self.interactables = []
 
     self.scene_transition_target = None
     self.scene_transition_direction = None
@@ -94,8 +97,18 @@ class Scene:
     
     return self
 
-  def draw_map(self, screen):
+  def draw_map(self):
     pygame.draw.rect(screen, self.background, pygame.Rect(*self.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
+    
+    for item in self.items:
+      if item.available:
+        pygame.draw.rect(screen, item.background, pygame.Rect(*item.position, *item.size))
+
+    for interactable in self.interactables:
+      if interactable.interacted:
+        pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*interactable.position, *interactable.size))
+      else:
+        pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*interactable.position, *interactable.size))
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
       pygame.draw.rect(screen, scene.background, pygame.Rect(*scene.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
@@ -107,3 +120,31 @@ class Scene:
            self.position.y < singleton.WINDOW_HEIGHT * -1 or \
            self.position.y > singleton.WINDOW_HEIGHT
 
+  def add_item(self, item):
+    self.items.append(item)
+    
+  def check_for_item(self, player_position):
+    for item in self.items:
+      if item.available:
+        if player_position[0] > item.position[0] - 100 and player_position[0] < item.position[0] +100:
+          if player_position[1] > item.position[1] - 100 and player_position[1] < item.position[1] + 100:
+            item.available = False
+            return item
+  
+  def add_interactable(self, interactable):
+    self.interactables.append(interactable)
+
+  def check_for_interactable(self, player_position, player_inventory):
+    for interactable in self.interactables:
+      if not interactable.interacted:
+        print("possible")
+        if player_position[0] > interactable.position[0] - 100 and player_position[0] < interactable.position[0] +100:
+          if player_position[1] > interactable.position[1] - 100 and player_position[1] < interactable.position[1] + 100:
+            print("right position")
+            for item in player_inventory:
+              print(item)
+              if item.name == interactable.condition:
+                print("condition met")
+                interactable.interacted = True
+                if interactable.item:
+                  return interactable.item
