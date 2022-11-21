@@ -1,8 +1,9 @@
+from collision import check_collision
 import pygame
 
 from singleton import singleton
 from screen import screen
-
+from classes.Spot import Spot
 
 class Scene:
   def __init__(self, background):
@@ -20,35 +21,35 @@ class Scene:
     self.scene_transition_direction = None
 
     self.spots_by_direction = {
-      'top':    pygame.Rect((singleton.WINDOW_WIDTH / 2) - (singleton.SPOT_BIGGER_SIZE / 2), 0, singleton.SPOT_BIGGER_SIZE, singleton.SPOT_SMALLER_SIZE),
-      'bottom': pygame.Rect((singleton.WINDOW_WIDTH / 2) - (singleton.SPOT_BIGGER_SIZE / 2), singleton.WINDOW_HEIGHT, singleton.SPOT_BIGGER_SIZE, singleton.SPOT_SMALLER_SIZE),
-      'right':  pygame.Rect(0, (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2), singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE),
-      'left':   pygame.Rect(0, (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2), singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE),
+      'top':    Spot(((singleton.WINDOW_WIDTH / 2) - (singleton.SPOT_BIGGER_SIZE / 2), 0), (singleton.SPOT_BIGGER_SIZE, singleton.SPOT_SMALLER_SIZE)),
+      'bottom': Spot(((singleton.WINDOW_WIDTH / 2) - (singleton.SPOT_BIGGER_SIZE / 2),singleton.WINDOW_HEIGHT - (singleton.SPOT_SMALLER_SIZE)), (singleton.SPOT_BIGGER_SIZE, singleton.SPOT_SMALLER_SIZE)),
+      'right':  Spot(((singleton.WINDOW_WIDTH) - (singleton.SPOT_SMALLER_SIZE), (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2)), (singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE)),
+      'left':   Spot((0, (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2)), (singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE))
     }
 
   def add_scene_transition_spot(self, scene, direction):
     match(direction):
       case 'top':
-        scene.position.x = 0
-        scene.position.y = singleton.WINDOW_HEIGHT * -1
+        scene.position.x = self.position.x
+        scene.position.y = self.position.y + singleton.WINDOW_HEIGHT * -1
 
         # if (self not in scene.neighbor_scenes):
         #   scene.add_scene_transition_spot(self, 'bottom')
       case 'bottom':
-        scene.position.x = 0
-        scene.position.y = singleton.WINDOW_HEIGHT
+        scene.position.x = self.position.x
+        scene.position.y = self.position.y + singleton.WINDOW_HEIGHT
 
         # if (self not in scene.neighbor_scenes):
         #   scene.add_scene_transition_spot(self, 'top')
       case 'right':
-        scene.position.x = singleton.WINDOW_WIDTH
-        scene.position.y = 0
+        scene.position.x = self.position.x + singleton.WINDOW_WIDTH
+        scene.position.y = self.position.y
 
         # if (self not in scene.neighbor_scenes):
         #   scene.add_scene_transition_spot(self, 'left')
       case 'left':
-        scene.position.x = singleton.WINDOW_WIDTH * -1
-        scene.position.y = 0
+        scene.position.x = self.position.x + singleton.WINDOW_WIDTH * -1
+        scene.position.y = self.position.y
 
         # if (self not in scene.neighbor_scenes):
         #   scene.add_scene_transition_spot(self, 'right')
@@ -64,7 +65,7 @@ class Scene:
         current_scene = self.scene_transition_target
         self.scene_transition_target = None
         self.scene_transition_direction = None
-        return current_scene
+        return current_scene, None, None, None
       
       direction = pygame.math.Vector2(0, 0)
 
@@ -82,37 +83,52 @@ class Scene:
 
       if self.scene_transition_target.position != pygame.math.Vector2(0, 0):
         self.scene_transition_target.position += direction * self.velocity
-      return self
+      return self, self.scene_transition_target, direction, self.velocity
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
-      collide = self.spots_by_direction[direction].collidepoint(player.position)
       
-      if collide:
+      if check_collision(self.spots_by_direction[direction].position, self.spots_by_direction[direction].size, player.position, player.size):
         self.scene_transition_target = scene
         self.scene_transition_direction = direction
       
         singleton.transitioning_scene = True
       
-        return self
+        return self, None, None, None
     
-    return self
+    return self, None, None, None
 
-  def draw_map(self):
+  def draw_map(self, scene_transition_target):
     pygame.draw.rect(screen, self.background, pygame.Rect(*self.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
-    
+
     for item in self.items:
       if item.available:
-        pygame.draw.rect(screen, item.background, pygame.Rect(*item.position, *item.size))
+        relative_position = (item.position.x + self.position.x, item.position.y + self.position.y)
+        pygame.draw.rect(screen, item.background, pygame.Rect(*relative_position, *item.size))
 
     for interactable in self.interactables:
+      relative_position = (interactable.position.x + self.position.x, interactable.position.y + self.position.y)
       if interactable.interacted:
-        pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*interactable.position, *interactable.size))
+        pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*relative_position, *interactable.size))
       else:
-        pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*interactable.position, *interactable.size))
+        pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*relative_position, *interactable.size))
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
       pygame.draw.rect(screen, scene.background, pygame.Rect(*scene.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
-      pygame.draw.rect(screen, (0, 0, 255), self.spots_by_direction[direction])
+      pygame.draw.rect(screen, (0, 0, 255), pygame.Rect(self.spots_by_direction[direction].position, self.spots_by_direction[direction].size))
+
+    if scene_transition_target:
+      for item in scene_transition_target.items:
+        if item.available:
+          relative_position = (item.position.x + scene_transition_target.position.x, item.position.y + scene_transition_target.position.y)
+          pygame.draw.rect(screen, item.background, pygame.Rect(*relative_position, *item.size))
+
+      for interactable in scene_transition_target.interactables:
+        relative_position = (interactable.position.x + scene_transition_target.position.x, interactable.position.y + scene_transition_target.position.y)
+        if interactable.interacted:
+          pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*relative_position, *interactable.size))
+        else:
+          pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*relative_position, *interactable.size))
+
 
   def is_out_of_camera(self):
     return self.position.x < singleton.WINDOW_WIDTH * -1 or \
@@ -123,28 +139,22 @@ class Scene:
   def add_item(self, item):
     self.items.append(item)
     
-  def check_for_item(self, player_position):
+  def check_for_item(self, player):
     for item in self.items:
       if item.available:
-        if player_position[0] > item.position[0] - 100 and player_position[0] < item.position[0] +100:
-          if player_position[1] > item.position[1] - 100 and player_position[1] < item.position[1] + 100:
-            item.available = False
-            return item
+        if check_collision(player.position, player.size, item.position, item.size):
+          item.available = False
+          return item
   
   def add_interactable(self, interactable):
     self.interactables.append(interactable)
 
-  def check_for_interactable(self, player_position, player_inventory):
+  def check_for_interactable(self, player):
     for interactable in self.interactables:
       if not interactable.interacted:
-        print("possible")
-        if player_position[0] > interactable.position[0] - 100 and player_position[0] < interactable.position[0] +100:
-          if player_position[1] > interactable.position[1] - 100 and player_position[1] < interactable.position[1] + 100:
-            print("right position")
-            for item in player_inventory:
-              print(item)
-              if item.name == interactable.condition:
-                print("condition met")
-                interactable.interacted = True
-                if interactable.item:
-                  return interactable.item
+        if check_collision(player.position, player.size, interactable.position, interactable.size):
+          for item in player.items:
+            if item.name == interactable.condition:
+              interactable.interacted = True
+              if interactable.item:
+                return interactable.item
