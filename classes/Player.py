@@ -1,3 +1,5 @@
+from math import floor
+from collision import check_collision
 import pygame
 
 from screen import screen
@@ -11,9 +13,10 @@ class Player:
     self.position = pygame.math.Vector2(self.dx, self.dy)
     self.velocity = 5
     self.items = []
-    self.size = (60, 60)
+    self.size = (40, 100)
   
-  def draw(self):
+  def draw(self, obstacles):
+    able = True
     keys = pygame.key.get_pressed()
 
     if not singleton.transitioning_scene:
@@ -21,7 +24,23 @@ class Player:
       self.dy = (keys[pygame.K_DOWN] - keys[pygame.K_UP])
 
       self.direction = pygame.math.Vector2(self.dx, self.dy)
-      self.position += self.direction * self.velocity    
+      self.position += self.direction * self.velocity
+      self.position.x = floor(self.position.x)
+      self.position.y = floor(self.position.y)
+
+    for obstacle in obstacles:
+      if check_collision(self.position, self.size, obstacle.position, obstacle.size):
+        able = False
+
+    if not able:
+      self.dx = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT])
+      self.dy = (keys[pygame.K_DOWN] - keys[pygame.K_UP])
+
+      self.direction = pygame.math.Vector2(self.dx, self.dy)
+      self.position += self.direction * self.velocity * -1
+      self.position.x = floor(self.position.x)
+      self.position.y = floor(self.position.y)
+    # print(self.position.y)
 
     pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))
 
@@ -47,6 +66,18 @@ class Player:
     self.dy = direction[1]
     
     self.direction = pygame.math.Vector2(self.dx, self.dy)
-    self.position += self.direction * velocity * 0.925
+
+    if self.direction.x != 0:
+      self.position += self.direction * velocity * 0.9457364341
+      if self.position.x > 1224:
+        self.position.x = 1225
+      elif self.position.x < 15:
+        self.position.x = 15
+    elif self.direction.y != 0:
+      self.position += self.direction * velocity * 0.8150684932
+      if self.position.y < 15:
+        self.position.y = 15
+      elif self.position.y > 605:
+        self.position.y = 605
 
     pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))

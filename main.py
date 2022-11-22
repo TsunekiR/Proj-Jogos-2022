@@ -22,9 +22,9 @@ while True:
   if scene_transition_target:
     player.follow_transition(direction, velocity)
 
-  current_scene.draw_map(scene_transition_target)
+  obstacles = current_scene.draw_map(scene_transition_target)
 
-  player.draw()
+  player.draw(obstacles)
   player.interact(current_scene)
 
   pygame.display.flip()
