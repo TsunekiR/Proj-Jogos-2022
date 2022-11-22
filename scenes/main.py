@@ -4,6 +4,6 @@ from scenes.Third import third_scene
 
 def build_map():
   first_scene.add_scene_transition_spot(second_scene, 'left')
-  first_scene.add_scene_transition_spot(third_scene, 'right')
+  first_scene.add_scene_transition_spot(third_scene, 'top')
   second_scene.add_scene_transition_spot(first_scene, 'right')
-  third_scene.add_scene_transition_spot(first_scene, 'left')
+  third_scene.add_scene_transition_spot(first_scene, 'bottom')

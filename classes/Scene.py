@@ -4,7 +4,6 @@ import pygame
 from singleton import singleton
 from screen import screen
 from classes.Spot import Spot
-
 class Scene:
   def __init__(self, background):
     self.background = background
@@ -16,6 +15,7 @@ class Scene:
     self.neighbor_scenes = []
     self.items = []
     self.interactables = []
+    self.walls = []
 
     self.scene_transition_target = None
     self.scene_transition_direction = None
@@ -94,7 +94,7 @@ class Scene:
         singleton.transitioning_scene = True
       
         return self, None, None, None
-    
+
     return self, None, None, None
 
   def draw_map(self, scene_transition_target):
@@ -111,6 +111,10 @@ class Scene:
         pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*relative_position, *interactable.size))
       else:
         pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*relative_position, *interactable.size))
+
+    for wall in self.walls:
+      relative_position = (wall.position.x + self.position.x, wall.position.y + self.position.y)
+      pygame.draw.rect(screen, wall.background, pygame.Rect(*relative_position, *wall.size))
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
       pygame.draw.rect(screen, scene.background, pygame.Rect(*scene.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
@@ -129,6 +133,11 @@ class Scene:
         else:
           pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*relative_position, *interactable.size))
 
+      for wall in scene_transition_target.walls:
+        relative_position = (wall.position.x + scene_transition_target.position.x, wall.position.y + scene_transition_target.position.y)
+        pygame.draw.rect(screen, wall.background, pygame.Rect(*relative_position, *wall.size))
+
+    return self.walls
 
   def is_out_of_camera(self):
     return self.position.x < singleton.WINDOW_WIDTH * -1 or \
@@ -158,3 +167,6 @@ class Scene:
               interactable.interacted = True
               if interactable.item:
                 return interactable.item
+
+  def add_wall(self, wall):
+    self.walls.append(wall)
