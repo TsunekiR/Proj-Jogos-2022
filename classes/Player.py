@@ -23,7 +23,7 @@ class Player:
       self.direction = pygame.math.Vector2(self.dx, self.dy)
       self.position += self.direction * self.velocity    
 
-    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, self.size[0], self.size[1]))
+    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))
 
   def interact(self, current_scene):
     keys = pygame.key.get_pressed()
@@ -49,4 +49,4 @@ class Player:
     self.direction = pygame.math.Vector2(self.dx, self.dy)
     self.position += self.direction * velocity * 0.925
 
-    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, self.size[0], self.size[1]))
+    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))
