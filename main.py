@@ -18,7 +18,7 @@ while True:
       pygame.quit()
       raise SystemExit
   
-  current_scene, scene_transition_target , direction, velocity= current_scene.check_for_scene_transitions(player)
+  current_scene, scene_transition_target , direction, velocity = current_scene.check_for_scene_transitions(player)
   if scene_transition_target:
     player.follow_transition(direction, velocity)
 
