@@ -11,6 +11,7 @@ class Player:
     self.position = pygame.math.Vector2(self.dx, self.dy)
     self.velocity = 5
     self.items = []
+    self.size = (60, 60)
   
   def draw(self):
     keys = pygame.key.get_pressed()
@@ -22,16 +23,16 @@ class Player:
       self.direction = pygame.math.Vector2(self.dx, self.dy)
       self.position += self.direction * self.velocity    
 
-    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, 60, 60))
+    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))
 
   def interact(self, current_scene):
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_SPACE]:
-      item = current_scene.check_for_item(self.position)
+      item = current_scene.check_for_item(self)
 
       if not item:
-        item = current_scene.check_for_interactable(self.position, self.items)
+        item = current_scene.check_for_interactable(self)
 
       if item:
         self.add_item(item)
@@ -40,3 +41,12 @@ class Player:
     self.items.append(item)
     for item in self.items:
       print(item.name)
+
+  def follow_transition(self, direction, velocity):
+    self.dx = direction[0]
+    self.dy = direction[1]
+    
+    self.direction = pygame.math.Vector2(self.dx, self.dy)
+    self.position += self.direction * velocity * 0.925
+
+    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))
