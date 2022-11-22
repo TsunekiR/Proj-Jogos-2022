@@ -1,3 +1,5 @@
+from math import floor
+from collision import check_collision
 import pygame
 
 from screen import screen
@@ -23,7 +25,6 @@ class Player:
 
     self.current_sprite = 0
     self.image = self.sprites[f'{self.current_animation_state}_{self.current_animation_direction}'][self.current_sprite]
-    
 
   def get_animation_sprites(self):
     animations = [
@@ -62,7 +63,9 @@ class Player:
         ) for i in range(sprites_count)
       ]
 
-  def draw(self):
+  
+  def draw(self, obstacles):
+    able = True
     keys = pygame.key.get_pressed()
 
     if not singleton.transitioning_scene:
@@ -73,33 +76,52 @@ class Player:
 
       if (self.direction.length() > 0):
         self.direction = self.direction.normalize()
-      
-      self.position += self.direction * self.velocity    
 
-      current_animation = f'{self.current_animation_state}_{self.current_animation_direction}'
+      self.position += self.direction * self.velocity
+      self.position.x = floor(self.position.x)
+      self.position.y = floor(self.position.y)
 
-      if self.direction.length() > 0:
-        self.current_animation_state = 'walking'
-      else:   
-        self.current_animation_state = 'idle'
-      
-      if self.direction.x == -1: self.current_animation_direction = 'left'
-      elif self.direction.x == 1: self.current_animation_direction = 'right'
-      elif self.direction.y == -1: self.current_animation_direction = 'up'
-      elif self.direction.y == 1: self.current_animation_direction = 'down'
+    current_animation = f'{self.current_animation_state}_{self.current_animation_direction}'
+
+    if self.direction.length() > 0:
+      self.current_animation_state = 'walking'
+    else:   
+      self.current_animation_state = 'idle'
     
-      next_animation = f'{self.current_animation_state}_{self.current_animation_direction}'
+    if self.direction.x == -1: self.current_animation_direction = 'left'
+    elif self.direction.x == 1: self.current_animation_direction = 'right'
+    elif self.direction.y == -1: self.current_animation_direction = 'up'
+    elif self.direction.y == 1: self.current_animation_direction = 'down'
+  
+    next_animation = f'{self.current_animation_state}_{self.current_animation_direction}'
 
-      self.animation_framerate += 1
+    self.animation_framerate += 1
 
-      if self.animation_framerate > 10 or current_animation != next_animation:
-        self.animation_framerate = 0
-        if self.current_sprite < len(self.sprites[next_animation]) - 1:
-          self.current_sprite += 1
-        else:
-          self.current_sprite = 0
+    if self.animation_framerate > 10 or current_animation != next_animation:
+      self.animation_framerate = 0
+      if self.current_sprite < len(self.sprites[next_animation]) - 1:
+        self.current_sprite += 1
+      else:
+        self.current_sprite = 0
 
-        self.image = self.sprites[next_animation][self.current_sprite]
+      self.image = self.sprites[next_animation][self.current_sprite]
+
+    for obstacle in obstacles:
+      if check_collision(self.position, self.size, obstacle.position, obstacle.size):
+        able = False
+
+    if not able:
+      self.dx = (keys[pygame.K_RIGHT] - keys[pygame.K_LEFT])
+      self.dy = (keys[pygame.K_DOWN] - keys[pygame.K_UP])
+
+      self.direction = pygame.math.Vector2(self.dx, self.dy)
+
+      if (self.direction.length() > 0):
+        self.direction = self.direction.normalize()
+
+      self.position += self.direction * self.velocity * -1
+      self.position.x = floor(self.position.x)
+      self.position.y = floor(self.position.y)
     
     rect = self.image.get_rect()
     rect.topleft = [*self.position]
@@ -127,6 +149,18 @@ class Player:
     self.dy = direction[1]
     
     self.direction = pygame.math.Vector2(self.dx, self.dy)
-    self.position += self.direction * velocity * 0.925
+
+    if self.direction.x != 0:
+      self.position += self.direction * velocity * 0.9457364341
+      if self.position.x > 1224:
+        self.position.x = 1225
+      elif self.position.x < 15:
+        self.position.x = 15
+    elif self.direction.y != 0:
+      self.position += self.direction * velocity * 0.8150684932
+      if self.position.y < 15:
+        self.position.y = 15
+      elif self.position.y > 605:
+        self.position.y = 605
 
     pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))
