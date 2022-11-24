@@ -33,8 +33,5 @@ while True:
   player.draw(obstacles)
   player.interact(current_scene)
 
-  Monster1.act(player)
-  Monster1.draw()
-
   pygame.display.flip()
   clock.tick(60)
