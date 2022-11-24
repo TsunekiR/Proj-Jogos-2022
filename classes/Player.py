@@ -162,5 +162,3 @@ class Player:
         self.position.y = 15
       elif self.position.y > 605:
         self.position.y = 605
-
-    pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(self.position.x, self.position.y, *self.size))

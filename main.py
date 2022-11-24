@@ -1,6 +1,7 @@
 import pygame
 
 from classes.Player import Player
+from monsters.Monster1 import Monster1
 from scenes.Forest import forest
 from scenes.main import map_builders
 
@@ -31,6 +32,9 @@ while True:
 
   player.draw(obstacles)
   player.interact(current_scene)
+
+  Monster1.act(player)
+  Monster1.draw()
 
   pygame.display.flip()
   clock.tick(60)
