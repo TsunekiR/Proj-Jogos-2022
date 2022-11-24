@@ -9,4 +9,5 @@ class Singleton:
     self.transitioning_scene = False
     self.transitioning_direction = None
 
+
 singleton = Singleton()
