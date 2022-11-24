@@ -62,7 +62,6 @@ class Player:
           self.size
         ) for i in range(sprites_count)
       ]
-
   
   def draw(self, obstacles):
     able = True
@@ -107,7 +106,7 @@ class Player:
       self.image = self.sprites[next_animation][self.current_sprite]
 
     for obstacle in obstacles:
-      if check_collision(self.position, self.size, obstacle.position, obstacle.size):
+      if obstacle.enabled and check_collision(self.position, self.size, obstacle.position, obstacle.size):
         able = False
 
     if not able:
@@ -120,8 +119,8 @@ class Player:
         self.direction = self.direction.normalize()
 
       self.position += self.direction * self.velocity * -1
-      self.position.x = floor(self.position.x)
-      self.position.y = floor(self.position.y)
+      self.position.x = self.position.x
+      self.position.y = self.position.y
     
     rect = self.image.get_rect()
     rect.topleft = [*self.position]
@@ -151,13 +150,13 @@ class Player:
     self.direction = pygame.math.Vector2(self.dx, self.dy)
 
     if self.direction.x != 0:
-      self.position += self.direction * velocity * 0.9457364341
+      self.position += self.direction * velocity * 0.85
       if self.position.x > 1224:
         self.position.x = 1225
       elif self.position.x < 15:
         self.position.x = 15
     elif self.direction.y != 0:
-      self.position += self.direction * velocity * 0.8150684932
+      self.position += self.direction * velocity * 0.75
       if self.position.y < 15:
         self.position.y = 15
       elif self.position.y > 605:
