@@ -4,8 +4,10 @@ import pygame
 from singleton import singleton
 from screen import screen
 from classes.Spot import Spot
+
 class Scene:
-  def __init__(self, background):
+  def __init__(self, id, background):
+    self.id = id
     self.background = background
     self.position = pygame.math.Vector2(0, 0)
     self.velocity = 10
@@ -26,6 +28,10 @@ class Scene:
       'right':  Spot(((singleton.WINDOW_WIDTH) - (singleton.SPOT_SMALLER_SIZE), (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2)), (singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE)),
       'left':   Spot((0, (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2)), (singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE))
     }
+
+  def reset_transition_spots(self):
+    self.neighbor_scenes = []
+    self.scene_transition_directions = []
 
   def add_scene_transition_spot(self, scene, direction):
     match(direction):
@@ -65,6 +71,7 @@ class Scene:
         current_scene = self.scene_transition_target
         self.scene_transition_target = None
         self.scene_transition_direction = None
+        
         return current_scene, None, None, None
       
       direction = pygame.math.Vector2(0, 0)

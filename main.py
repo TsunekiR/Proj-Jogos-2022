@@ -1,15 +1,15 @@
 import pygame
 
 from classes.Player import Player
-from screen import screen
-from scenes.First import first_scene
-from scenes.main import build_map
+from scenes.Forest import forest
+from scenes.main import map_builders
 
 pygame.init()
-build_map()
+current_scene_id = 'forest'
+map_builders[current_scene_id]()
 
 clock = pygame.time.Clock()
-current_scene = first_scene
+current_scene = forest
 player = Player()
 
 while True:
@@ -18,7 +18,12 @@ while True:
       pygame.quit()
       raise SystemExit
   
-  current_scene, scene_transition_target , direction, velocity = current_scene.check_for_scene_transitions(player)
+  current_scene, scene_transition_target, direction, velocity = current_scene.check_for_scene_transitions(player)
+
+  if current_scene.id != current_scene_id:
+    current_scene_id = current_scene.id
+    map_builders[current_scene_id]()
+
   if scene_transition_target:
     player.follow_transition(direction, velocity)
 
