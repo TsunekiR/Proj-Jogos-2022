@@ -1,6 +1,10 @@
+import pygame
 from classes.Scene import Scene
-from Items.Item1 import item1
 
-forest = Scene("forest", "purple")
+sprite = pygame.transform.scale(
+  pygame.image.load(f'sprites/background/forest/0.png'),
+  (1280, 720),
+)
 
-forest.add_item(item1)
+forest = Scene("forest", sprite)
+

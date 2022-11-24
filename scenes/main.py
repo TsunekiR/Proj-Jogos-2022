@@ -1,5 +1,5 @@
+from singleton import singleton
 from scenes.Forest import *
-from scenes.CastleEntry import *
 from scenes.FirstRoom import *
 from scenes.AuxiliarRoom import *
 from scenes.Hallway import *
@@ -9,17 +9,15 @@ from scenes.FourthRoom import *
 
 def build_forest():
   forest.reset_transition_spots()
-  forest.add_scene_transition_spot(castle_entry, 'top')
-
-def build_castle_entry():
-  castle_entry.reset_transition_spots()
-  castle_entry.add_scene_transition_spot(forest, 'bottom')
-  castle_entry.add_scene_transition_spot(first_room, 'top')
+  forest.add_scene_transition_spot(first_room, 'top')
 
 def build_first_room():
-  castle_entry.reset_transition_spots()
-  first_room.add_scene_transition_spot(castle_entry, 'bottom')
+  first_room.reset_transition_spots()
+
+  first_room.add_scene_transition_spot(forest, 'bottom')
+
   first_room.add_scene_transition_spot(auxiliar_room, 'right')
+
   first_room.add_scene_transition_spot(hallway, 'top')
 
 def build_auxiliar_room():
@@ -42,13 +40,14 @@ def build_third_room():
   third_room.add_scene_transition_spot(second_room, 'bottom')
 
 
-def build_fourth_room():  
-  fourth_room.add_scene_transition_spot(second_room, 'right')
-  fourth_room.add_scene_transition_spot(auxiliar_room, 'top')
+def build_fourth_room():
+  if singleton.has_picaxe:
+    fourth_room.add_scene_transition_spot(auxiliar_room, 'bottom')
+    
+  fourth_room.add_scene_transition_spot(second_room, 'left')
 
 map_builders = {
   forest.id: build_forest,
-  castle_entry.id: build_castle_entry,
   first_room.id: build_first_room,
   auxiliar_room.id: build_auxiliar_room,
   hallway.id: build_hallway,

@@ -6,9 +6,10 @@ from screen import screen
 from classes.Spot import Spot
 
 class Scene:
-  def __init__(self, id, background):
+  def __init__(self, id, sprite, offset = 0):
     self.id = id
-    self.background = background
+    self.sprite = sprite
+    self.offset = offset
     self.position = pygame.math.Vector2(0, 0)
     self.velocity = 10
 
@@ -105,44 +106,45 @@ class Scene:
     return self, None, None, None
 
   def draw_map(self, scene_transition_target):
-    pygame.draw.rect(screen, self.background, pygame.Rect(*self.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
+    screen.fill('black')
+    screen.blit(self.sprite, pygame.Rect(self.position.x - self.offset, self.position.y, 1280, 720))
 
     for item in self.items:
       if item.available:
         relative_position = (item.position.x + self.position.x, item.position.y + self.position.y)
-        pygame.draw.rect(screen, item.background, pygame.Rect(*relative_position, *item.size))
+        screen.blit(item.sprite, pygame.Rect(*relative_position, *item.size))
 
     for interactable in self.interactables:
       relative_position = (interactable.position.x + self.position.x, interactable.position.y + self.position.y)
-      if interactable.interacted:
-        pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*relative_position, *interactable.size))
-      else:
-        pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*relative_position, *interactable.size))
+      if interactable.interacted and interactable.sprite_after:
+        screen.blit(interactable.sprite_after, pygame.Rect(*relative_position, *interactable.size))
+      elif not interactable.interacted and interactable.sprite_before:
+        screen.blit(interactable.sprite_before, pygame.Rect(*relative_position, *interactable.size))
 
     for wall in self.walls:
       relative_position = (wall.position.x + self.position.x, wall.position.y + self.position.y)
-      pygame.draw.rect(screen, wall.background, pygame.Rect(*relative_position, *wall.size))
+      pygame.draw.rect(screen, 'gray', pygame.Rect(*relative_position, *wall.size), 1)
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
-      pygame.draw.rect(screen, scene.background, pygame.Rect(*scene.position, singleton.WINDOW_WIDTH, singleton.WINDOW_HEIGHT))
+      screen.blit(scene.sprite, pygame.Rect(scene.position.x - scene.offset, scene.position.y, 1280, 720))
       pygame.draw.rect(screen, (0, 0, 255), pygame.Rect(self.spots_by_direction[direction].position, self.spots_by_direction[direction].size))
 
     if scene_transition_target:
       for item in scene_transition_target.items:
         if item.available:
           relative_position = (item.position.x + scene_transition_target.position.x, item.position.y + scene_transition_target.position.y)
-          pygame.draw.rect(screen, item.background, pygame.Rect(*relative_position, *item.size))
+          screen.blit(item.sprite, pygame.Rect(*relative_position, *item.size))
 
       for interactable in scene_transition_target.interactables:
         relative_position = (interactable.position.x + scene_transition_target.position.x, interactable.position.y + scene_transition_target.position.y)
-        if interactable.interacted:
-          pygame.draw.rect(screen, interactable.background_after, pygame.Rect(*relative_position, *interactable.size))
-        else:
-          pygame.draw.rect(screen, interactable.background_before, pygame.Rect(*relative_position, *interactable.size))
+        if interactable.interacted and interactable.sprite_after:
+          screen.blit(interactable.sprite_after, pygame.Rect(*relative_position, *interactable.size))
+        elif not interactable.interacted and interactable.sprite_before:
+          screen.blit(interactable.sprite_before, pygame.Rect(*relative_position, *interactable.size))
 
-      for wall in scene_transition_target.walls:
-        relative_position = (wall.position.x + scene_transition_target.position.x, wall.position.y + scene_transition_target.position.y)
-        pygame.draw.rect(screen, wall.background, pygame.Rect(*relative_position, *wall.size))
+      # for wall in scene_transition_target.walls:
+      #   relative_position = (wall.position.x + scene_transition_target.position.x, wall.position.y + scene_transition_target.position.y)
+      #   pygame.draw.rect(screen, wall.background, pygame.Rect(*relative_position, *wall.size))
 
     return self.walls
 
@@ -172,6 +174,8 @@ class Scene:
           for item in player.items:
             if item.name == interactable.condition:
               interactable.interacted = True
+              if interactable.on_interacted:
+                interactable.on_interacted()
               if interactable.item:
                 return interactable.item
 
