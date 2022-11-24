@@ -1,6 +1,7 @@
 import pygame
 
 from classes.Player import Player
+from monsters.Monster1 import Monster1
 from screen import screen
 from scenes.First import first_scene
 from scenes.main import build_map
@@ -26,6 +27,9 @@ while True:
 
   player.draw(obstacles)
   player.interact(current_scene)
+
+  Monster1.act(player)
+  Monster1.draw()
 
   pygame.display.flip()
   clock.tick(60)
