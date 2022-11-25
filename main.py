@@ -1,3 +1,10 @@
+# ----------------------------------------
+# GRUPO:
+# Ítalo Assunção Aguiar - 31928900
+# Felipe Augusto Retondar - 31617212
+# Roberto Tsuneki Sa Freire - 31956968
+# ----------------------------------------
+
 from datetime import datetime
 from datetime import timedelta
 import time
