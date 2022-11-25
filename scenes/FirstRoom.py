@@ -15,9 +15,9 @@ first_room = Scene("first_room", sprite)
 left_limit = Wall((0, 0), (63, 720))
 right_top_limit = Wall((1235, 0), (50, 280))
 right_bottom_limit = Wall((1235, 420), (50, 300))
-top_left_limit = Wall((0, 0), (580, 95))
-top_right_limit = Wall((670, 0), (580, 95))
-top_center_limit = Wall((580, 0), (700, 95))
+top_left_limit = Wall((0, 0), (580, 65))
+top_right_limit = Wall((670, 0), (580, 65))
+top_center_limit = Wall((580, 0), (700, 65))
 bottom_left_limit = Wall((0, 680), (575, 40))
 bottom_right_limit = Wall((700, 680), (575, 40))
 bottom_center_limit = Wall((575, 680), (700, 40))
@@ -33,7 +33,7 @@ first_room.add_wall(bottom_right_limit)
 def unblocked_forest():
   bottom_center_limit.enabled = False
 
-blocker_forest = Interactable(lock, None, (625, 675), (30, 30), "forest_key", unblocked_forest, None)
+blocker_forest = Interactable(lock, None, (625, 675), (30, 30), "forest_key", unblocked_forest, False, None)
 first_room.add_interactable(blocker_forest)
 
 if not blocker_forest.interacted:
@@ -42,7 +42,7 @@ if not blocker_forest.interacted:
 def unblocked_hallway():
   top_center_limit.enabled = False
 
-blocker_hallway = Interactable(lock, None, (610, 70), (30, 30), "hallway_key", unblocked_hallway, None)
+blocker_hallway = Interactable(lock, None, (610, 70), (30, 30), "hallway_key", unblocked_hallway, False, None)
 first_room.add_interactable(blocker_hallway)
 
 if not blocker_hallway.interacted:

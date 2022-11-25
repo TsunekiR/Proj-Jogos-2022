@@ -14,3 +14,8 @@ potion = pygame.transform.scale(
   pygame.image.load('sprites/items/potion.png'),
   (30, 30)
 )
+
+barrels = pygame.transform.scale(
+  pygame.image.load('sprites/items/chests.png'),
+  (100, 100)
+)

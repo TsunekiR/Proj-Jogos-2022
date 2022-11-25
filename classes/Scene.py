@@ -4,9 +4,11 @@ import pygame
 from singleton import singleton
 from screen import screen
 from classes.Spot import Spot
+from classes.Item import Item
+from threading import Timer
 
 class Scene:
-  def __init__(self, id, sprite, offset = 0):
+  def __init__(self, id, sprite, offset = 0, reset = False):
     self.id = id
     self.sprite = sprite
     self.offset = offset
@@ -16,9 +18,11 @@ class Scene:
     self.scene_transition_spots = []
     self.scene_transition_directions = []
     self.neighbor_scenes = []
-    self.items = []
-    self.interactables = []
-    self.walls = []
+
+    if not reset:
+      self.items = []
+      self.interactables = []
+      self.walls = []
 
     self.scene_transition_target = None
     self.scene_transition_direction = None
@@ -29,6 +33,9 @@ class Scene:
       'right':  Spot(((singleton.WINDOW_WIDTH) - (singleton.SPOT_SMALLER_SIZE), (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2)), (singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE)),
       'left':   Spot((0, (singleton.WINDOW_HEIGHT / 2) - (singleton.SPOT_BIGGER_SIZE / 2)), (singleton.SPOT_SMALLER_SIZE, singleton.SPOT_BIGGER_SIZE))
     }
+
+  def reset(self):
+    self.__init__(self.id, self.sprite, self.offset, True)
 
   def reset_transition_spots(self):
     self.neighbor_scenes = []
@@ -109,6 +116,12 @@ class Scene:
     screen.fill('black')
     screen.blit(self.sprite, pygame.Rect(self.position.x - self.offset, self.position.y, 1280, 720))
 
+    if singleton.dialog:
+      font = pygame.font.SysFont('Comic Sans MS', 15)
+      text = font.render(singleton.dialog, False, (255, 255, 255))
+      pygame.draw.rect(screen, 'black', pygame.Rect(50, 50, 600, 40))
+      screen.blit(text, (100, 60))
+
     for item in self.items:
       if item.available:
         relative_position = (item.position.x + self.position.x, item.position.y + self.position.y)
@@ -123,11 +136,9 @@ class Scene:
 
     for wall in self.walls:
       relative_position = (wall.position.x + self.position.x, wall.position.y + self.position.y)
-      pygame.draw.rect(screen, 'gray', pygame.Rect(*relative_position, *wall.size), 1)
 
     for scene, direction in zip(self.neighbor_scenes, self.scene_transition_directions):
       screen.blit(scene.sprite, pygame.Rect(scene.position.x - scene.offset, scene.position.y, 1280, 720))
-      pygame.draw.rect(screen, (0, 0, 255), pygame.Rect(self.spots_by_direction[direction].position, self.spots_by_direction[direction].size))
 
     if scene_transition_target:
       for item in scene_transition_target.items:
@@ -173,7 +184,8 @@ class Scene:
         if check_collision(player.position, player.size, interactable.position, interactable.size):
           for item in player.items:
             if item.name == interactable.condition:
-              interactable.interacted = True
+              if not interactable.constant:
+                interactable.interacted = True
               if interactable.on_interacted:
                 interactable.on_interacted()
               if interactable.item:

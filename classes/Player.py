@@ -4,7 +4,8 @@ import pygame
 
 from screen import screen
 from singleton import singleton
-
+from classes.Item import Item
+from threading import Timer
 
 class Player:
   def __init__(self):
@@ -13,7 +14,7 @@ class Player:
     self.dy = 300
     self.position = pygame.math.Vector2(self.dx, self.dy)
     self.velocity = 5
-    self.items = []
+    self.items = [Item('dialog', None, (0, 0), (0, 0))]
     self.size = (40, 100)
 
     self.sprites = {}
@@ -139,6 +140,10 @@ class Player:
         self.add_item(item)
 
   def add_item(self, item):
+    if item.name == 'invisibility_potion':
+      singleton.dialog = 'An invisibility potion? That might save me'
+      s = Timer(3.0, singleton.reset_dialog)
+      s.start()
     self.items.append(item)
     for item in self.items:
       print(item.name)

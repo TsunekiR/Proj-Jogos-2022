@@ -7,17 +7,23 @@ from scenes.SecondRoom import *
 from scenes.ThirdRoom import *
 from scenes.FourthRoom import *
 
+def reset_game():
+  forest.reset()
+  first_room.reset()
+  auxiliar_room.reset()
+  hallway.reset()
+  second_room.reset()
+  third_room.reset()
+  fourth_room.reset()
+
 def build_forest():
   forest.reset_transition_spots()
   forest.add_scene_transition_spot(first_room, 'top')
 
 def build_first_room():
   first_room.reset_transition_spots()
-
   first_room.add_scene_transition_spot(forest, 'bottom')
-
   first_room.add_scene_transition_spot(auxiliar_room, 'right')
-
   first_room.add_scene_transition_spot(hallway, 'top')
 
 def build_auxiliar_room():
@@ -41,9 +47,7 @@ def build_third_room():
 
 
 def build_fourth_room():
-  if singleton.has_picaxe:
-    fourth_room.add_scene_transition_spot(auxiliar_room, 'bottom')
-    
+  fourth_room.add_scene_transition_spot(auxiliar_room, 'bottom')
   fourth_room.add_scene_transition_spot(second_room, 'left')
 
 map_builders = {

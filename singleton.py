@@ -13,6 +13,9 @@ class Singleton:
     self.has_hallway_key = False
     self.has_picaxe = False
     self.has_invisibility_cloak = False
+    self.dialog = None
 
+  def reset_dialog(self):
+    self.dialog = None
 
 singleton = Singleton()
