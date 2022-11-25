@@ -9,8 +9,11 @@ sprite = pygame.transform.scale(
 
 hallway = Scene("hallway", sprite)
 
-left_limit = Wall((0, 0), (400, 720))
-right_limit = Wall((850, 0), (1280, 720))
+def mount_hallway():
+  left_limit = Wall((0, 0), (400, 720))
+  right_limit = Wall((850, 0), (1280, 720))
 
-hallway.add_wall(left_limit)
-hallway.add_wall(right_limit)
+  hallway.add_wall(left_limit)
+  hallway.add_wall(right_limit)
+
+mount_hallway()

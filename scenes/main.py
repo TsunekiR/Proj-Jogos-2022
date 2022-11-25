@@ -15,11 +15,18 @@ def reset_game():
   second_room.reset()
   third_room.reset()
   fourth_room.reset()
+  mount_forest()
+  mount_first_room()
+  mount_auxiliar_room()
+  mount_hallway()
+  mount_second_room()
+  mount_third_room()
+  mount_fourth_room()
 
 def build_forest():
   forest.reset_transition_spots()
   forest.add_scene_transition_spot(first_room, 'top')
-
+  
 def build_first_room():
   first_room.reset_transition_spots()
   first_room.add_scene_transition_spot(forest, 'bottom')

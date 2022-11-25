@@ -169,7 +169,7 @@ class Monster:
         self.position.x += -1 * signx * self.velocity * proportionx
         self.position.y += -1 * signy * self.velocity * proportiony
 
-    if self.location == current_scene.id:
+    if self.location == current_scene.id and not singleton.transitioning_scene:
       if check_collision(player.position, player.size, self.position, self.size):
         return True
 

@@ -57,10 +57,10 @@ while True:
       Monster1.reset()
       Monster2.reset()
       Monster3.reset()
+      player = Player()
       reset_game()
       map_builders['forest']()
       current_scene = forest
-      player = Player()
       dead = None
       dead2 = None
       current_scene_id = None
@@ -78,9 +78,6 @@ while True:
       delay =datetime.now() + timedelta(0,1)
       current_scene_id = current_scene.id
       map_builders[current_scene_id]()
-
-    # if current_scene.id == 'fourth_room':
-      
 
     if scene_transition_target:
       player.follow_transition(direction, velocity)

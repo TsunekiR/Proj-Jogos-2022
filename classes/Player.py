@@ -81,17 +81,19 @@ class Player:
       self.position.x = floor(self.position.x)
       self.position.y = floor(self.position.y)
 
+      if self.direction.length() > 0:
+        self.current_animation_state = 'walking'
+      else:   
+        self.current_animation_state = 'idle'
+      
+      if self.direction.x == -1: self.current_animation_direction = 'left'
+      elif self.direction.x == 1: self.current_animation_direction = 'right'
+      elif self.direction.y == -1: self.current_animation_direction = 'up'
+      elif self.direction.y == 1: self.current_animation_direction = 'down'
+
     current_animation = f'{self.current_animation_state}_{self.current_animation_direction}'
 
-    if self.direction.length() > 0:
-      self.current_animation_state = 'walking'
-    else:   
-      self.current_animation_state = 'idle'
     
-    if self.direction.x == -1: self.current_animation_direction = 'left'
-    elif self.direction.x == 1: self.current_animation_direction = 'right'
-    elif self.direction.y == -1: self.current_animation_direction = 'up'
-    elif self.direction.y == 1: self.current_animation_direction = 'down'
   
     next_animation = f'{self.current_animation_state}_{self.current_animation_direction}'
 

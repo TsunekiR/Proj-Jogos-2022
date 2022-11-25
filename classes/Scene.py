@@ -8,7 +8,7 @@ from classes.Item import Item
 from threading import Timer
 
 class Scene:
-  def __init__(self, id, sprite, offset = 0, reset = False):
+  def __init__(self, id, sprite, offset = 0):
     self.id = id
     self.sprite = sprite
     self.offset = offset
@@ -18,11 +18,9 @@ class Scene:
     self.scene_transition_spots = []
     self.scene_transition_directions = []
     self.neighbor_scenes = []
-
-    if not reset:
-      self.items = []
-      self.interactables = []
-      self.walls = []
+    self.items = []
+    self.interactables = []
+    self.walls = []
 
     self.scene_transition_target = None
     self.scene_transition_direction = None
@@ -35,7 +33,7 @@ class Scene:
     }
 
   def reset(self):
-    self.__init__(self.id, self.sprite, self.offset, True)
+    self.__init__(self.id, self.sprite, self.offset)
 
   def reset_transition_spots(self):
     self.neighbor_scenes = []
