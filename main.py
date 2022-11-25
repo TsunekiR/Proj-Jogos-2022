@@ -27,6 +27,7 @@ menu = pygame.image.load('UI/Cover.png')
 game_over = pygame.image.load('UI/game_over.png')
 current_scene_id = None
 dead = None
+dead2 = None
 monster_sprite = 0
 
 while True:
@@ -49,7 +50,7 @@ while True:
       difficulty = 3
       current_scene_id = 'forest'
 
-  elif dead:
+  elif dead or dead2:
     screen.blit(game_over, game_over.get_rect())
     keys = pygame.key.get_pressed()
     if keys[pygame.K_SPACE]:
@@ -61,6 +62,7 @@ while True:
       current_scene = forest
       player = Player()
       dead = None
+      dead2 = None
       current_scene_id = None
 
   else:
@@ -68,6 +70,7 @@ while True:
 
     if current_scene.id == 'forest' and current_scene_id == 'first_room':
       dead = True
+      dead2 = True
       continue
 
     if current_scene.id != current_scene_id:
@@ -94,7 +97,7 @@ while True:
       dead = Monster2.act(player, current_scene, delay)
       Monster2.draw(direction, current_scene, delay)
 
-    dead = Monster3.act(player, current_scene, delay)
+    dead2 = Monster3.act(player, current_scene, delay)
     Monster3.draw(direction, current_scene, delay)
 
   pygame.display.flip()
